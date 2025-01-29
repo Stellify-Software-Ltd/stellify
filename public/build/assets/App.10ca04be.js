@@ -1,1 +1,0 @@
-import{_ as o,S as n,f as a,g as c,F as p,o as r,c as l,r as _}from"./_baseGetTag.37be2ff4.js";const u={data(){return{store:n()}}};function f(i,m,d,k,t,y){return r(!0),a(p,null,c(t.store.page.data,(e,s)=>(r(),l(_(t.store.content[e].type),{key:s+e,data:"",uuid:e},null,8,["uuid"]))),128)}const x=o(u,[["render",f]]);export{x as s};
