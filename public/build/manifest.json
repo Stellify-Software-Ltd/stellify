@@ -1,0 +1,52 @@
+{
+  "resources/js/app.js": {
+    "file": "assets/app.7e3e30fe.js",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "__baseGetTag.37be2ff4.js",
+      "_App.10ca04be.js"
+    ]
+  },
+  "resources/js/appedit.js": {
+    "file": "assets/appedit.792c873e.js",
+    "src": "resources/js/appedit.js",
+    "isEntry": true,
+    "imports": [
+      "__baseGetTag.37be2ff4.js",
+      "_EmbedEditor.81b67f92.js"
+    ],
+    "css": [
+      "assets/appedit.f83cf2c0.css"
+    ]
+  },
+  "resources/js/apppreview.js": {
+    "file": "assets/apppreview.f4a8b6c2.js",
+    "src": "resources/js/apppreview.js",
+    "isEntry": true,
+    "imports": [
+      "__baseGetTag.37be2ff4.js",
+      "_App.10ca04be.js",
+      "_EmbedEditor.81b67f92.js"
+    ]
+  },
+  "__baseGetTag.37be2ff4.js": {
+    "file": "assets/_baseGetTag.37be2ff4.js"
+  },
+  "_App.10ca04be.js": {
+    "file": "assets/App.10ca04be.js",
+    "imports": [
+      "__baseGetTag.37be2ff4.js"
+    ]
+  },
+  "_EmbedEditor.81b67f92.js": {
+    "file": "assets/EmbedEditor.81b67f92.js",
+    "imports": [
+      "__baseGetTag.37be2ff4.js"
+    ]
+  },
+  "resources/js/appedit.css": {
+    "file": "assets/appedit.f83cf2c0.css",
+    "src": "resources/js/appedit.css"
+  }
+}
