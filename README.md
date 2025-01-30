@@ -28,7 +28,7 @@ Using the Config Editor, you can connect to your own database to store your appl
 
 This repo containes the a fully usable, stable version of the Laravel web application we're using to serve stellisoft.com. More specifically, it contains the methods that:
 
-- Handle routing, accepting requests from the WWW.
+- Handle routing, accepting requests.
 - Fetch data from a database containing Stellify data objects.
 - Parse the data objects.
 - Construct a response to return to the server.
@@ -39,7 +39,7 @@ The repo doesn't include code for generating data. As discussed above, this can 
 
 ## Development Setup
 
-As were developing a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented across the WWW.
+As were developing a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented.
 
 ## Contributing
 
