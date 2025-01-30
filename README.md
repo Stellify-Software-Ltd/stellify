@@ -49,8 +49,8 @@ As we're dealing with a Laravel app, the easiest way to develop with Laravel rig
 
 Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the coding language used:
 
-http://localhost/php/{filename}
-http://localhost/js/{filename}
+- For PHP files use: http://localhost/php/{filename}
+- For Javascript files use: http://localhost/js/{filename}
 
 Simply pass the filename as a parameter to view the code in your browser window. Alternatively, you can add the query parameter ?file=true to download the file directly to your device.
 
