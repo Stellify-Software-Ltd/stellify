@@ -1,12 +1,12 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.svg" width="200" alt="Stellify Logo"></a></p>
 
-A version of Laravel that's setup for use with Stellify.
+A base install version of Laravel that's setup for use with Stellify.
 
 ## About Stellify
 
-Stellify is a system of representing the code you write as JSON data objects then storing them in a database so they can be easily manipulated. These data objects can be translated back to the code you originally authored so that it can be interpreted on the server or sent to the browser to be rendered/ executed as would ordinarily be the case.
+Stellify is a system of representing the code you write as JSON data objects then storing them in a database so they can be easily manipulated. These data objects can be translated back to the code you originally authored so that it can be interpreted on a server or sent to a browser to be rendered/ executed as would ordinarily be the case.
 
-The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform actions such as making updates to all applications using Stellify, remotely, similar to updating your operating system.
+The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform powerful actions, such as making updates to all applications built using Stellify, remotely, similar to how you can update your operating system.
 
 Other benefits include:
 
