@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('slug');
             $table->string('name');
             $table->string('type');
+            $table->boolean('public')->default(false);
             $table->json('data');
             $table->timestamps();
         });
