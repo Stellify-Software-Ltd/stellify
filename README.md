@@ -1,5 +1,7 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.svg" width="200" alt="Stellify Logo"></a></p>
 
+A version of Laravel that's setup for use with Stellify.
+
 ## About Stellify
 
 Stellify is a system of representing the code you write as JSON data objects then storing them in a database so they can be easily manipulated. These data objects can be translated back to the code you originally authored so that it can be interpreted on the server or sent to the browser to be rendered/ executed as would ordinarily be the case.
