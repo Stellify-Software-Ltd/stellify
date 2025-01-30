@@ -39,9 +39,20 @@ It also includes convenience methods that allow you to convert your application'
 
 NOTE: The repo doesn't include code for generating data objects (an editor). As discussed above, you can use our editor (for free) at [stellisoft.com](https://stellisoft.com/).
 
-## Development Setup
+## Documentation
+
+### Development Setup
 
 As we're dealing with a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented on their website, YouTube and Laracasts.
+
+### Generate PHP/JS files from the database
+
+Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the coding language used:
+
+http://localhost/php/{filename}
+http://localhost/js/{filename}
+
+Simply pass the filename as a parameter to view the code in your browser window. Alternatively, you can add the query parameter ?file=true to download the file directly to your device.
 
 ## Contributing
 
