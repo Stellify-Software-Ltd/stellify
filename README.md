@@ -1,6 +1,6 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.svg" width="200" alt="Stellify Logo"></a></p>
 
-A base install version of Laravel that's setup for use with Stellify.
+The current Laravel web application framework, setup for use with Stellify.
 
 ## About Stellify
 
