@@ -2,16 +2,16 @@
 
 ## About Stellify
 
-Stellify is a format that represents the code you write as data rows in a database. This data can be translated back to the code you originally authored so that it can be executed no differently to the way it is when stored in a file format.
+Stellify is a system of representing the code you write as JSON data objects then storing them in a database so they can be easily manipulated. These data objects can be translated back to the code you originally authored so that it can be interpreted on the server or sent to the browser to be rendered/ executed as would ordinarily be the case.
 
-The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform actions such as making updates to all applications using Stellify, remotely, in the same way you update your operating system, at the click of a button.
+The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform actions such as making updates to all applications using Stellify, remotely, similar to updating your operating system.
 
 Other benefits include:
 
 - Increased portability of code
 - Ease of backup
 - Granular editing permissions
-- Code sharing
+- The ability to share the same code across applications and organizations
 
 ## What is stellisoft.com?
 
@@ -33,13 +33,13 @@ This repo containes the a fully usable, stable version of the Laravel web applic
 - Parse the data objects.
 - Construct a response to return to the server.
 
-It also includes convenience methods that allow you to convert your application data (code) back into files containing your code should you wish to stop using Stellify or store backups as files.
+It also includes convenience methods that allow you to convert your application's data (objects) back into code stored in files so that, should you wish to stop using Stellify or simply want backups stored as files, then you can do so.
 
-The repo doesn't include code for generating data. As discussed above, this can be achieved (for free) using our editor which is found at [stellisoft.com](https://stellisoft.com/).
+NOTE: The repo doesn't include code for generating data objects (an editor). As discussed above, you can use our editor (for free) at [stellisoft.com](https://stellisoft.com/).
 
 ## Development Setup
 
-As were developing a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented.
+As we're dealing with a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented on their website, YouTube and Laracasts.
 
 ## Contributing
 
