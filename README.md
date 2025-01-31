@@ -64,7 +64,7 @@ Finally, here's an example of how we would store a variable in Javascript:
     id: "0b270c57-3d26-4d89-be5a-91ee11cc5a79"
 }
 ```
-Stellify abstracts and standardises and your ***entire*** web application in this way, making it possible to pull updates in from a central remote store, as happens with software updates, that update ***entire*** applications whilst remaining mindful of how changes will impact all parts of your application. Introducing AI to the mix, it's not difficult to see how a simple shift to storing code in this way can really introduce some very powerful ways of maintaining, developing and deploying your web applications.
+Stellify abstracts and standardises and your ***entire*** web application in this way, making it possible to pull updates in from a central remote store that update ***entire*** applications, all whilst remaining mindful of how changes will impact other parts of your application. Introducing AI to the mix, it's not difficult to see how a simple shift to storing code in this way can really introduce some very powerful ways of maintaining, developing and deploying your web applications.
 
 Other benefits of this approach include:
 
@@ -93,9 +93,9 @@ This repo containes the a fully usable, stable version of the Laravel web applic
 - Parse the data objects.
 - Construct a response to return to the server.
 
-It also includes convenience methods that allow you to convert your application's data (objects) back into code stored in files so that, should you wish to stop using Stellify or simply want backups stored as files, then you can do so.
+It also includes convenience methods that allow you to convert your application's data back into raw code meaning, should you wish to stop using Stellify or simply want backups stored as files, you can do so.
 
-NOTE: The repo doesn't include code for generating data objects (an editor). As discussed above, you can use our editor (for free) at [stellisoft.com](https://stellisoft.com/).
+NOTE: This repository doesn't include code for generating data. To achieve this, you can use our editor found at [stellisoft.com](https://stellisoft.com/).
 
 ## Documentation
 
