@@ -64,10 +64,9 @@ Finally, here's an example of how we would store a variable in Javascript:
     id: "0b270c57-3d26-4d89-be5a-91ee11cc5a79"
 }
 ```
+Stellify abstracts and standardises and your ***entire*** web application in this way, making it possible to pull updates in from a central remote store, as happens with software updates, that update ***entire*** applications whilst remaining mindful of how changes will impact all parts of your application. Introducing AI to the mix, it's not difficult to see how a simple shift to storing code in this way can really introduce some very powerful ways of maintaining, developing and deploying your web applications.
 
-The main benefit of storing code this way is that it allows us to leverage the power of database queries to perform powerful actions such as making updates to all applications built using Stellify or targetting a specific subset of elements based upon an common attribute in order to introduce a new attribute. As Stellify standardises the your entire web application, these kinds of updates can be pulled in from a central remote store, as takes place with software updates.
-
-Other benefits include:
+Other benefits of this approach include:
 
 - Increased portability of code
 - Ease of delivery and backup
