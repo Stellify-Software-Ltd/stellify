@@ -14,7 +14,10 @@ Here's an example of how we would store an HTML tag:
     tag: "div",
     id: "fbc60d5e-e9a2-4c0e-8d09-9a2d196d94fc",
     parent: "b00d4336-1898-4b10-b5f6-aa210ed97bc3",
-    children: ["4efa4c77-5602-4372-8cf9-3419ada0cf6cm", "71067e7b-7a61-43d0-97c5-1cb51c3ea262"],
+    children: [
+        "4efa4c77-5602-4372-8cf9-3419ada0cf6cm", 
+        "71067e7b-7a61-43d0-97c5-1cb51c3ea262"
+    ],
     classes: [
         "sm:mx-auto",
         "sm:w-full",
@@ -42,15 +45,15 @@ Here's how we would store a file:
     type: "controller",
     extends: "71067e7b-7a61-43d0-97c5-1cb51c3ea262",
     methods: [
-            "3e3ae425-4471-400e-ad36-dfeff487a85b"
+        "3e3ae425-4471-400e-ad36-dfeff487a85b"
     ],
     includes: [
-            "6177293f-4c34-45d7-8e82-43291fd7c348"
+        "6177293f-4c34-45d7-8e82-43291fd7c348"
     ]
 }
 ```
 
-It's important to note that additional fields exist in the same row, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use in this repo under the database -> migrations directory.
+It's important to note that additional fields exist in the same row, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use at Stellisoft in this repository, under the `database/migrations` directory.
 
 Finally, here's an example of how we would store a variable in Javascript:
 
