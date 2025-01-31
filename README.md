@@ -4,16 +4,54 @@ The current stable version of our Laravel web application framework, supercharge
 
 ## About Stellify
 
-Stellify is a system of representing code as JSON data objects which are stored in a database so they can be easily manipulated. These data objects can be assembled back to the code you originally authored to be interpreted on a server or sent to a browser for execution.
+Stellify is a system of representing code as JSON data objects which are stored in a database tables rather than in files. These data objects can be assembled back to the code you originally authored to be interpreted on a server or sent to a browser for execution.
+
+Here's an example of how we would store an HTML tag:
+
+```
+{
+    type: "layout",
+    tag: "div",
+    id: "fbc60d5e-e9a2-4c0e-8d09-9a2d196d94fc",
+    parent: "b00d4336-1898-4b10-b5f6-aa210ed97bc3",
+    children: ["4efa4c77-5602-4372-8cf9-3419ada0cf6cm", "71067e7b-7a61-43d0-97c5-1cb51c3ea262"],
+    classes: [
+        "sm:mx-auto",
+        "sm:w-full",
+        "sm:max-w-sm",
+        "text-white"
+    ]
+}
+```
+
+And here's example of how we would store the token "for" for the PHP language: 
+
+```
+{
+    type: "T_FOR",
+    id: "23951891-1b84-4fa9-9f53-fe99faabf08e"
+}
+```
+
+Finally, here's an example of how we would store an initialised variable in Javascript:
+
+```
+{
+    type: "variable",
+    name: "counter",
+    value: 1,
+    slug: "0b270c57-3d26-4d89-be5a-91ee11cc5a79"
+}
+```
 
 The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform powerful actions, such as making updates to all applications built using Stellify, remotely.
 
 Other benefits include:
 
 - Increased portability of code
-- Ease of backup
-- Granular editing permissions
-- The ability to share the same code across applications and organizations
+- Ease of delivery and backup
+- Ability to enforce granular editing permissions
+- The ability to override data in order to share the same code across applications and organizations
 
 ## What is stellisoft.com?
 
@@ -43,11 +81,11 @@ NOTE: The repo doesn't include code for generating data objects (an editor). As 
 
 ### Development Setup
 
-As we're dealing with a Laravel app, the easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine. Other means of developing and hosting Laravel applications are well documented on their website, YouTube and Laracasts.
+The easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine and follow their documentation. Other means of developing and hosting Laravel applications are well documented on their website, blogs, YouTube and Laracasts.
 
 ### Generate PHP/JS files from the database
 
-Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the coding language used:
+Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the language in question:
 
 - For PHP files use: http://localhost/php/{filename}
 - For Javascript files use: http://localhost/js/{filename}
