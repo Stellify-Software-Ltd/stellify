@@ -24,7 +24,7 @@ Here's an example of how we would store an HTML tag:
 }
 ```
 
-And here's example of how we would store the token "for" for the PHP language: 
+And here's example of how we would store the token "for" in PHP: 
 
 ```
 {
@@ -44,7 +44,7 @@ Finally, here's an example of how we would store an initialised variable in Java
 }
 ```
 
-The main benefit of storing code in this way is that it allows us to leverage the power of database queries to perform powerful actions, such as making updates to all applications built using Stellify, remotely.
+The main benefit of storing code this way is that it allows us to leverage the power of database queries to perform powerful actions such as making updates to all applications built using Stellify or targetting a specific subset of elements based upon an common attribute in order to introduce a new attribute. As Stellify standardises the your entire web application, these kinds of updates can be pulled in from a central remote store, as takes place with software updates.
 
 Other benefits include:
 
