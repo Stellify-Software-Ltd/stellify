@@ -32,20 +32,23 @@ And here's example of how we would store the token "for" in PHP:
     id: "23951891-1b84-4fa9-9f53-fe99faabf08e"
 }
 ```
+
 Here's how we would store a file:
 
+```
 {
-		"name": "SocialiteController",
-		"slug": "d441b1e9-28b5-4144-8566-8b924394285a",
-		"type": "controller",
-		"extends": "Controller",
-        "methods": [
-				"3e3ae425-4471-400e-ad36-dfeff487a85b"
-		],
-		"includes": [
-				"6177293f-4c34-45d7-8e82-43291fd7c348"
-		]
+    name: "SocialiteController",
+    id: "d441b1e9-28b5-4144-8566-8b924394285a",
+    type: "controller",
+    extends: "71067e7b-7a61-43d0-97c5-1cb51c3ea262",
+    methods: [
+            "3e3ae425-4471-400e-ad36-dfeff487a85b"
+    ],
+    includes: [
+            "6177293f-4c34-45d7-8e82-43291fd7c348"
+    ]
 }
+```
 
 It's important to note that additional fields exist in the same row, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use in this repo under the database -> migrations directory.
 
@@ -55,7 +58,7 @@ Finally, here's an example of how we would store a variable in Javascript:
 {
     type: "variable",
     name: "counter",
-    slug: "0b270c57-3d26-4d89-be5a-91ee11cc5a79"
+    id: "0b270c57-3d26-4d89-be5a-91ee11cc5a79"
 }
 ```
 
