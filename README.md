@@ -27,15 +27,6 @@ Here's an example of how we would store an HTML tag:
 }
 ```
 
-And here's example of how we would store the token "for" in PHP: 
-
-```
-{
-    type: "T_FOR",
-    id: "23951891-1b84-4fa9-9f53-fe99faabf08e"
-}
-```
-
 Here's how we would store a file:
 
 ```
@@ -54,6 +45,15 @@ Here's how we would store a file:
 ```
 
 It's important to note that additional fields exist in the same row, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use at Stellisoft in this repository, under the `database/migrations` directory.
+
+And here's example of how we would store the token "for" in PHP: 
+
+```
+{
+    type: "T_FOR",
+    id: "23951891-1b84-4fa9-9f53-fe99faabf08e"
+}
+```
 
 Finally, here's an example of how we would store a variable in Javascript:
 
