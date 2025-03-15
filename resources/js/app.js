@@ -1,5 +1,11 @@
 import { createApp, toHandlers } from 'vue/dist/vue.esm-bundler'
 import { createPinia, defineStore } from 'pinia'
+import { Container, Validator, Http } from "stellifyjs";
+
+window.HttpClient = Http;
+window.Validator = Validator;
+window.Container = Container;
+
 import { ProductionStore } from './stores/ProductionStore';
 import sApp from './components/App.vue'
 import sWrapper from './components/Elements/Element.vue'

@@ -48,7 +48,6 @@
 
 <script>
     import debounce from 'lodash/debounce';
-    import { Container, Validator } from "stellifyjs";
     import { StellifyStore } from '../../stores/StellifyStore';
     export default {
         data() {
