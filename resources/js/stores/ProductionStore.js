@@ -104,5 +104,53 @@ export const ProductionStore = defineStore('stellifyStore', {
 				placeholder_end: '}'
 			}
 		}
-    )
+    ),
+	actions: {
+        runMethod(method, { caller, event }) {
+            if (this.methods[method] && Object.keys(this.jsTokens).length > 0) {
+                let expression = '';
+                this.methods[method].data.forEach((statement) => {
+                    if (this.statements[statement]) {
+                        this.statements[statement].data.forEach((clause) => {
+                            if (this.clauses[clause] && this.clauses[clause].type) {
+                                if (
+                                    typeof this.jsTokens[this.clauses[clause].type] != 'undefined' &&
+                                    ['array', 'tuple', 'string', 'number', 'method', 'float', 'integer', 'object', 'property', 'element', 'variable', 'boolean'].includes(this.clauses[clause].type) == false
+                                ) {
+                                    expression += this.jsTokens[this.clauses[clause].type];
+                                } else {
+                                    if (this.clauses[clause].type == 'variable' && this.clauses[clause].name == 'value'){
+                                        expression += "'" + event.target.value + "'";
+                                    } else if (this.clauses[clause].name == 'callerId') {
+                                        expression += "'" + caller + "'";
+                                    } else if (this.clauses[clause].type == 'object') {
+                                        if (this.clauses[clause].name == 'caller') {
+                                            expression += "window.App.content['" + caller + "']";
+                                        } else {
+                                            expression += this.clauses[clause].name;
+                                        }
+                                    } else if (this.clauses[clause].type == 'element') {
+                                        expression += "window.App.content['" + this.clauses[clause].name + "']"
+                                    } else if (this.clauses[clause].type == 'string') {
+                                        expression += "'" + this.clauses[clause].value + "'";
+                                    } else if (this.clauses[clause].type == 'number' || this.clauses[clause].type == 'boolean') {
+                                        expression += this.clauses[clause].value;
+                                    } else {
+                                        expression += this.clauses[clause].name;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+                try {
+                    return eval(expression);
+                } catch (error) {
+                    console.error('Stellify error: ' +  error);
+                }
+            } else {
+                console.error('Stellify error: Method not found, have you removed the method and reinstated it? If so, you must update the reference.');
+            }
+        }
+	}
 })
