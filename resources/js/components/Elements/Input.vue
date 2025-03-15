@@ -48,6 +48,7 @@
 
 <script>
     import debounce from 'lodash/debounce';
+    import { Container, Validator } from "stellifyjs";
     import { StellifyStore } from '../../stores/StellifyStore';
     export default {
         data() {
@@ -57,6 +58,10 @@
             }
         },
         props: {
+            parent: {
+                type: String,
+                default: null
+            },
             uuid: {
                 type: String,
                 default: null
@@ -116,95 +121,61 @@
             }
         },
         methods: {
-            runMethod(method) {
-                if (Object.keys(this.store.jsTokens).length) {
-                    let expression = '';
-                    this.store.methods[method].data.forEach((method) => {
-                        if (this.store.statements[method].data) {
-                            this.store.statements[method].data.forEach((clause) => {
-                                if (
-                                    typeof this.store.jsTokens[this.store.clauses[clause].type] != 'undefined' &&
-                                    ['string', 'number', 'method', 'float', 'integer', 'object', 'property', 'element', 'variable', 'boolean'].includes(this.store.clauses[clause].type) == false
-                                ) {
-                                    expression += this.store.jsTokens[this.store.clauses[clause].type];
-                                } else {
-                                    if (this.store.clauses[clause].type == 'variable' && typeof this.store.variables[this.store.clauses[clause].name] != 'undefined') {
-                                        expression += 'this.store.variables.' + this.store.clauses[clause].name;
-                                    } else if (this.store.clauses[clause].type == 'element' && typeof this.store.content[this.store.clauses[clause].value] != 'undefined') {
-                                        expression += "this.store.content['" + this.store.clauses[clause].value + "']";
-                                    } else if (this.store.clauses[clause].type == 'string') {
-                                        expression += "'" + this.store.clauses[clause].value + "'";
-                                    } else if (this.store.clauses[clause].type == 'number' || this.store.clauses[clause].type == 'boolean') {
-                                        expression += this.store.clauses[clause].value;
-                                    } else {
-                                        expression += this.store.clauses[clause].name;
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    try {
-                        return eval(expression);
-                    } catch (error) {
-                        console.error('Stellify error: ' +  error);
-                    }
-                }
-            },
             onClickHandler(event) {
                 this.store.variables.lastClicked = this.store.content[this.uuid].slug;
                 if (this.store.content[this.uuid].onClick) {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid].onClick);
+                    this.store.runMethod(this.store.content[this.uuid].onClick);
                 }
             },
             onDblClickHandler(event) {
                 if (this.store.content[this.uuid].onDblClick) {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid].onDblClick);
+                    this.store.runMethod(this.store.content[this.uuid].onDblClick);
                 }
             },
             onKeyUpHandler(event) {
                 if (typeof this.store.content[this.uuid]['onKeyUp'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
                     if (event.keyCode == this.store.content[this.uuid].keyCode) {
-                        this.runMethod(this.store.content[this.uuid]['onKeyUp']);
+                        this.store.runMethod(this.store.content[this.uuid]['onKeyUp']);
                     }
                 }
             },
             onBlurHandler(event) {
                 if (typeof this.store.content[this.uuid]['onBlur'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onBlur']);
+                    this.store.runMethod(this.store.content[this.uuid]['onBlur']);
                 }
             },
             onInputHandler(event) {
                 if (typeof this.store.content[this.uuid]['onInput'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onInput']);
+                    this.store.runMethod(this.store.content[this.uuid]['onInput']);
                 }
             },
             onChangeHandler(event) {
                 if (typeof this.store.content[this.uuid]['onChange'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onChange']);
+                    this.store.runMethod(this.store.content[this.uuid]['onChange']);
                 }
             },
             onFocusHandler(event) {
                 if (typeof this.store.content[this.uuid]['onFocus'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onFocus']);
+                    this.store.runMethod(this.store.content[this.uuid]['onFocus']);
                 }
             },
             onMouseOverHandler(event) {
                 if (typeof this.store.content[this.uuid]['onMouseOver'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onMouseOver']);
+                    this.store.runMethod(this.store.content[this.uuid]['onMouseOver']);
                 }
             },
             onMouseLeaveHandler(event) {
                 if (typeof this.store.content[this.uuid]['onMouseLeave'] != 'undefined') {
                     this.store.content[this.uuid].value = event.target.value;
-                    this.runMethod(this.store.content[this.uuid]['onMouseLeave']);
+                    this.store.runMethod(this.store.content[this.uuid]['onMouseLeave']);
                 }
             }
         },

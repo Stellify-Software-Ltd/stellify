@@ -4,19 +4,22 @@
         :method="store.content[uuid].method" 
         :enctype="store.content[uuid].enctype" 
         :id="store.content[uuid].id"
-        :class="[classes]">
+        :class="[classes]"
+        @submit="onSubmit">
         <input v-if="store.content[uuid].method == 'POST'" type="hidden" name="_token" :value="csrf">
         <component
             v-for="(uuid, index) in store.content[uuid].data" 
             :key="index"
             :is="store.content[uuid].type"
-            :uuid="uuid">
+            :uuid="uuid"
+            :parent="uuid">
         </component>
     </form>
 </template>
 
 <script>
     import { ProductionStore } from '../../stores/ProductionStore';
+    import { Container, Validator } from "stellifyjs";
     export default {
         data() {
             return {
@@ -35,6 +38,14 @@
             },
             classes() {
                 return this.store.content[this.uuid].classes;
+            }
+        },
+        methods: {
+            onSubmit(event) {
+                if (typeof this.store.content[this.uuid]['onSubmit'] != 'undefined') {
+                    this.store.content[this.uuid].value = event.target.value;
+                    this.store.runMethod(this.store.content[this.uuid]['onSubmit'], { caller: this.uuid, event: event });
+                }
             }
         }
     }
