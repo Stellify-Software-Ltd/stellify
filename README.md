@@ -1,10 +1,13 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.svg" width="200" alt="Stellify Logo"></a></p>
 
-The current stable version of our Laravel web application framework, supercharged with Stellify.
+The current stable version of our Laravel web application framework, supercharged with Stellify!!!
 
-## About Stellify
+## What is Stellify?
+Stellify is  essentially a JSON schema that encapsulates the entire web stack around Laravel. Its elegant approach is similar to an abstract syntax tree (AST) for your application, where each element is uniquely identified and linked. This makes it easy to manipulate, extend, or even transform into different outputs (e.g., Laravel PHP, JavaScript, database migrations, etc.).
 
-Stellify is a system of representing code as JSON data objects which are stored in a database tables rather than in files. These data objects can be assembled back to the code you originally authored to be interpreted on a server or sent to a browser for execution.
+The JSON data objects are stored in a database tables rather than in files. These data objects can be assembled back to the code you originally authored to be interpreted on a server or sent to a client for execution.
+
+We’re essentially creating a high-level abstraction over programming itself. You could apply transformations, enforce consistency across an entire codebase, or even optimize generated code via AI, before outputting it.
 
 Here's an example of how we would store an HTML tag:
 
@@ -27,7 +30,7 @@ Here's an example of how we would store an HTML tag:
 }
 ```
 
-Here's how we would store a file:
+Here's how we store a controller file, not that the extends key points to a different JSON object that reprsents the controller class this controller extends:
 
 ```
 {
@@ -69,7 +72,8 @@ Stellify abstracts and standardises and your ***entire*** web application in thi
 Other benefits of this approach include:
 
 - Increased portability of code
-- Ease of delivery and backup
+- Cross-language generation
+- Ease and increased speed of delivery and backup
 - Ability to enforce granular editing permissions
 - The ability to override data in order to share the same code across applications and organizations
 
@@ -82,20 +86,18 @@ Other benefits of this approach include:
 - A Configuration Editor
 - A Bulk Application Editor
 
-Using the Config Editor, you can connect to your own database to store your application data (code) giving you complete autonomy.
+By default the editor will store your code on Stellisoft's database server, however, using the Config Editor, you can connect to your own database to store your application's configuration and code giving you complete autonomy over your data (read on for instructions on how to migrate the required table structures and data).
 
 ## About this Repository
 
 This repo containes the a fully usable, stable version of the Laravel web application we're using to serve stellisoft.com. More specifically, it contains the methods that:
 
-- Handle routing, accepting requests.
-- Fetch data from a database containing Stellify data objects.
-- Parse the data objects.
-- Construct a response to return to the server.
+- Handle routing and accept requests.
+- Fetch data from a database containing Stellify data objects (JSON).
+- Transform data objects (JSON) into code that can be understood and executed.
+- Construct responses that are returned to the client making the initial request.
 
 It also includes convenience methods that allow you to convert your application's data back into raw code meaning, should you wish to stop using Stellify or simply want backups stored as files, you can do so.
-
-NOTE: This repository doesn't include code for generating data. To achieve this, you can use our editor found at [stellisoft.com](https://stellisoft.com/).
 
 ## Documentation
 
@@ -131,6 +133,8 @@ Configure your database in .env and run migrations:
 ```
 php artisan migrate
 ```
+
+Or alternatively, sign into your stellisoft.com account, configure your database in the database config editor screen and run migrations from the projects tab. 
 
 Install frontend dependencies:
 ```
@@ -169,12 +173,12 @@ git remote add upstream https://github.com/Stellify-Software-Ltd/stellify.git
 
 ### Generate PHP/JS code/ files from the database
 
-Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the language in question:
+Should you wish to extract your code from the database into an actual file, then you can do so by simply requesting one of the following routes depending upon the language in question:
 
 - For PHP files use: http://localhost/php/{filename}
 - For Javascript files use: http://localhost/js/{filename}
 
-Simply pass the filename as a parameter to view the code in your browser window. Alternatively, you can add the query parameter ?file=true to download the file directly to your device.
+Simply pass the filename as a parameter to view the code in your browser window. Alternatively, you can add the query parameter ?file=true to download the file directly to your machine.
 
 ## Contributing
 
