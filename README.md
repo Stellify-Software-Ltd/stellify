@@ -171,6 +171,20 @@ If you want to keep track of the original Stellify repository as well, you can a
 git remote add upstream https://github.com/Stellify-Software-Ltd/stellify.git
 ```
 
+Sign into Laravel Cloud. Go to your main Laravel Cloud dashboard page and select + New application.
+
+Connect your Git provider
+
+Select Continue with GitHub, GitLab, or Bitbucket. A new tab / window will open. Sign in to your Git provider and select the user / organization and repositories you want to give Laravel Cloud access to.
+
+Create a new application.
+
+Select the repository you want to use, name your Laravel Cloud application, and select a Region where your application will deploy. Then, click Create Application. Your application will be created along with a default environment. You will then be redirected to your application’s default environment overview page.
+
+Congratulations, you now have your application setup on Laravel Cloud!
+
+For the simplest of applications, you might be ready to hit the Deploy button. Chances are, however, that you will want to make some customizations first like choosing a PHP version, adding environment variables, or setting up a database, which you can do from your environment’s infrastructure canvas dashboard. Once you’re ready to ship, just click the “Deploy” button.
+
 ### Generate PHP/JS code/ files from the database
 
 Should you wish to extract your code from the database into an actual file, then you can do so by simply requesting one of the following routes depending upon the language in question:
