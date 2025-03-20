@@ -101,9 +101,73 @@ NOTE: This repository doesn't include code for generating data. To achieve this,
 
 ### Development Setup
 
-The easiest way to develop with Laravel right now is to install [Laravel Herd](https://herd.laravel.com/) on your machine and follow their documentation. Other means of developing and hosting Laravel applications are well documented on their website, blogs, YouTube and Laracasts.
+Install [Laravel Herd](https://herd.laravel.com/) on your system.
 
-### Generate PHP/JS files from the database
+Clone the repository:
+```
+cd ~/Sites/
+git clone https://github.com/Stellify-Software-Ltd/stellify.git
+cd stellify
+```
+
+Link the project with Herd:
+```
+herd link
+herd link custom-domain
+```
+
+Install PHP dependencies:
+```
+composer install
+```
+
+Set up your environment file:
+```
+cp .env.example .env
+php artisan key:generate
+```
+
+Configure your database in .env and run migrations:
+```
+php artisan migrate
+```
+
+Install frontend dependencies:
+```
+npm install
+npm run dev
+```
+
+Other means of developing and hosting Laravel applications are well documented on their website, blogs, YouTube and Laracasts.
+
+### Staging/ Production Setup using Laravel Cloud
+
+Once you are ready to host your Stellify application we recommend using Laravel Cloud to quickly get up and running. You can create a staging/ sandbox site free of charge.
+
+If you haven't already done so, create a new repository on GitHub (don't initialize it with a README).
+
+Remove the existing Git remote:
+```
+git remote remove origin
+```
+
+Add your new repository as the remote:
+```
+git remote add origin https://github.com/YourUsername/YourRepoName.git
+```
+
+Push the code to your repository:
+```
+git branch -M main
+git push -u origin main
+```
+
+If you want to keep track of the original Stellify repository as well, you can add it as another remote:
+```
+git remote add upstream https://github.com/Stellify-Software-Ltd/stellify.git
+```
+
+### Generate PHP/JS code/ files from the database
 
 Should you wish to extract your code from the database into an actual file then you can do so by simply requesting one of the following routes depending upon the language in question:
 

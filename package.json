@@ -20,7 +20,7 @@
         "autoprefixer": "^10.4.2",
         "lodash": "^4.17.19",
         "pinia": "^2.2.8",
-        "stellifyjs": "^1.11.2",
+        "stellifyjs": "^1.15.3",
         "vue": "^3.2.31",
         "vuedraggable": "^4.1.0",
         "vuex": "^4.0.2"
