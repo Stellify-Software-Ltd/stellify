@@ -86,7 +86,7 @@ Other benefits of this approach include:
 - A Configuration Editor
 - A Bulk Application Editor
 
-By default the editor will store your code on Stellisoft's database server, however, using the Config Editor, you can connect to your own database to store your application's configuration and code giving you complete autonomy over your data (read on for instructions on how to migrate the required table structures and data).
+By default the editor will store your code on Stellisoft's own database servers however, using the Config Editor, you can connect to your own database and use it to store your data, giving you complete autonomy (read on for instructions on how to migrate the required table structures and existing data via the editor).
 
 ## About this Repository
 
@@ -146,7 +146,7 @@ Other means of developing and hosting Laravel applications are well documented o
 
 ### Staging/ Production Setup using Laravel Cloud
 
-Once you are ready to host your Stellify application we recommend using Laravel Cloud to quickly get up and running. You can create a staging/ sandbox site free of charge.
+Once you are ready to host your Stellify application we recommend using [Laravel Cloud](https://cloud.laravel.com/docs/quickstart) to quickly get up and running. You can create a staging/ sandbox site free of charge.
 
 If you haven't already done so, create a new repository on GitHub (don't initialize it with a README).
 
