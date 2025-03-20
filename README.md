@@ -173,11 +173,11 @@ git remote add upstream https://github.com/Stellify-Software-Ltd/stellify.git
 
 Sign into Laravel Cloud. Go to your main Laravel Cloud dashboard page and select + New application.
 
-Connect your Git provider
+Connect your Git provider:
 
 Select Continue with GitHub, GitLab, or Bitbucket. A new tab / window will open. Sign in to your Git provider and select the user / organization and repositories you want to give Laravel Cloud access to.
 
-Create a new application.
+Create a new application:
 
 Select the repository you want to use, name your Laravel Cloud application, and select a Region where your application will deploy. Then, click Create Application. Your application will be created along with a default environment. You will then be redirected to your application’s default environment overview page.
 
