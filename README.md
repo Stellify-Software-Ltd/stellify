@@ -1,4 +1,4 @@
-<p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.svg" width="200" alt="Stellify Logo"></a></p>
+<p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.jpeg" width="200" alt="Stellify Logo"></a></p>
 
 The current stable version of our Laravel web application framework, supercharged with Stellify!!!
 
