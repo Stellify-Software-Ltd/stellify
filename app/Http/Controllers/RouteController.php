@@ -29,7 +29,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 
-class StellifyController extends Controller implements HasMiddleware
+class RouteController extends Controller implements HasMiddleware
 {
     private $code;
     private $body;
@@ -706,51 +706,6 @@ class StellifyController extends Controller implements HasMiddleware
         }
     }
 
-    public function constructPhpMethods($fileData) {
-        if (!empty($fileData['object'])) {
-            $this->code .= "\n". $fileData['name'] . ": {\n";
-        }
-        $this->methods = Method::on($this->databaseConnection)->whereIn('slug', $fileData['data'])->get();
-        if (!empty($this->methods)) {
-            foreach($this->methods as $method) {
-                $methodData = json_decode($method->data, true);
-                if (in_array($methodData['name'], $this->vueMethods) || in_array($methodData['type'], $this->vueTypes)) {
-                    continue;
-                }
-                if (!empty($fileData['template']) && $fileData['template'] == 'vue') {
-                    $this->code .= $methodData['name'] . "() {";
-                } else {
-                    $this->code .= "function " . $methodData['name'] . "(";
-                    if (!empty($methodData['parameters'])) {
-                        foreach($methodData['parameters'] as $parameterIndex => $parameter) {
-                            $this->code .= $parameter['value'];
-                            if (($parameterIndex + 1) < count($function['parameters'])){
-                                $this->code .= ", ";
-                            }
-                        }
-                    }
-                    $this->code .= ") {";
-                }
-                if (!empty($methodData['data'])) {
-                    $statements = Statement::on($this->databaseConnection)->whereIn('slug', $methodData['data'])->get();
-                    foreach($methodData['data'] as $slug) {
-                        $statement = $statements->where('slug', $slug)->first();
-                        $statementData = json_decode($statement->data, true);
-                        $this->constructPhpStatement($statementData);
-                    }
-                }
-                if (!empty($methodData['property'])) {
-                    $this->code .= "\n},";
-                } else {
-                    $this->code .= "\n}\n\n";
-                }
-            }
-        }
-        if (!empty($fileData['object'])) {
-            $this->code .= "\n}";
-        }
-    }
-
     public function constructJsMethod($methodData) {
         if (in_array($methodData['name'], $this->vueMethods) || in_array($methodData['type'], $this->vueTypes)) {
             $this->code .= $methodData['name'] . "(";
@@ -1079,36 +1034,49 @@ class StellifyController extends Controller implements HasMiddleware
 
     public function php($project, $request, $controllerData, $methodData, $variables, $type, $returnCode) {
         try {
-            if (\DB::connection('mysql2')->getDatabaseName()) {
-                $includes = '';
+            if ($this->externalDatabaseConnection) {
+                $controllerIncludes = '';
+                //Build controller includes
                 if (!empty($controllerData['includes'])) {
-                    foreach($controllerData['includes'] as $include) {
-                        $includeLibrary = Illuminate::on($this->databaseConnection)->where('slug', $include)->first();
-                        $includes .= 'use ' . $includeLibrary->name . ';' . "\n";
+                    $libraries = File::on($this->databaseConnection)
+                        ->whereIn('slug', $controllerData['includes'])->get();
+                    if (!empty($libraries)) {
+                        foreach($libraries as $library) {
+                            $controllerIncludes .= $this->phpAssemblerService->assembleUseStatement($library->namespace, $library->name);
+                        }
                     }
                 }
+
                 if (!empty($controllerData['models'])) {
-                    foreach($controllerData['models'] as $include) {
-                        $includeModel = File::on($this->databaseConnection)->where(['slug' => $include, 'project_id' => $project])->first();
-                        $includes .= 'use App\\Models\\' . $includeModel->name . ';' . "\n";
-                        $instanceVariables = '';
-                        if (!empty($includeModel)) {
-                            $includeModelData = json_decode($includeModel->data, true);
-                            $includeModelMethodString = '';
-                            if (!empty($includeModelData['data'])) {
-                                $includeMethods = Method::on($this->databaseConnection)->where('project_id', $project)->where(function ($query) use ($includeModelData) {
-                                    $query->whereIn('slug', $includeModelData['data']);
-                                })->first();
+                    $models = File::on($this->databaseConnection)
+                        ->where('project_id', $project)
+                        ->whereIn('slug', $controllerData['models'])->get();
+                    if (!empty($models)) {
+                        foreach($models as $model) {
+                            //assemble includes for controller class
+                            $controllerIncludes .= $this->phpAssemblerService->assembleUseStatement('model', $model->name);
+                            $modelData = json_decode($model->data, true);
+
+                            if (!empty($modelData['includes'])) {
+                                $libraries = File::on($this->databaseConnection)
+                                    ->whereIn('slug', $modelData['includes'])->get();
                             }
-                            $includeModelName = $includeModel->name;
-                            $guarded = '';
-                            $fillable = '';
-                            $timestamps = 'false';
-                            if (!empty($includeModelData['variables'])) {
-                                foreach($includeModelData['variables'] as $key) {
+
+                            //Define variables
+                            $modelInstanceVariables = '';
+                            if (!empty($modelData['variables'])) {
+                                foreach($modelData['variables'] as $key) {
                                     $value = '';
                                     if (isset($key['value'])) {
-                                        if (is_bool($key['value'])) {
+                                        if ($key['type'] == 'array') {
+                                            $definition = Definition::on($this->databaseConnection)
+                                                ->where('project_id', $project)
+                                                ->where('slug', $key['value'])
+                                                ->first();
+                                            if (!empty($definition)) {
+                                                $value = $definition->data;
+                                            }
+                                        } else if (is_bool($key['value'])) {
                                             if ($key['value'] == false) {
                                                 $value = 'false';
                                             } else {
@@ -1120,30 +1088,45 @@ class StellifyController extends Controller implements HasMiddleware
                                             $value = $key['value'];
                                         }
                                     }
-                                    $instanceVariables .= $key['scope'] . ' $' . $key['name'] . ' = ' . $value . ";\n\t\t";
+                                    $modelInstanceVariables .= $key['scope'] . ' $' . $key['name'] . ' = ' . $value . ";\n\t\t";
                                 }
                             }
-                            $modelIncludeTemplate = <<<EOD
+                            $modelMethods = '';
+                            //Build model methods
+                            if (!empty($modelData['data'])) {
+                                $methods = Method::on($this->databaseConnection)
+                                    ->where('project_id', $project)
+                                    ->whereIn('slug', $modelData['data']);
+                                foreach($methods as $method) {
+                                    $modelMethodData = json_decode($method->data, true);
+                                    $modelMethods .= $this->phpAssemblerService->assembleMethod($modelMethodData);
+                                }
+                            }
+                            $modelFile = <<<EOD
                             namespace App\Models; 
                             use Illuminate\Database\Eloquent\Model;
-                            class $includeModelName extends Model {
-                                protected \$connection= 'mysql2';
-                                protected \$fillable = [$fillable];
-                                public \$timestamps = $timestamps;
+                            class $model->name extends Model {
+                                protected \$connection = '$this->externalDatabaseConnection';
+                                $modelInstanceVariables
 
                                 public function setTable(\$tableName)
                                 {
                                     \$this->table = \$tableName;
                                 }
+
+                                $modelMethods
                             }
                             EOD;
-                            eval($modelIncludeTemplate);
+                            if (!empty($this->debug)) {
+                                dump($modelFile);
+                            } else if ($this->phpAssemblerService->validateFile($modelFile)) {
+                                eval($modelFile);
+                            }
                         }
                     }
                 }
-
-                //define variables
-                $controllerInstanceVariables = '';
+                //Define variables
+                $controllerVariables = '';
                 if (!empty($controllerData['variables'])) {
                     foreach($controllerData['variables'] as $key) {
                         $value = '';
@@ -1160,279 +1143,83 @@ class StellifyController extends Controller implements HasMiddleware
                                 $value = $key['value'];
                             }
                         }
-                        $controllerInstanceVariables .= $key['scope'] . ' $' . $key['name'] . ' = ' . $value . ";\n\t\t";
+                        $controllerVariables .= $key['scope'] . ' $' . $key['name'] . ' = ' . $value . ";\n\t\t";
                     }
                 }
-                //Construct method
+                //Build methods
                 if (!empty($methodData)) {
-                    $this->code = '';
-                    if (empty($methodData['scope'])) {
-                        $this->code .= 'public';
-                    } else {
-                        $this->code .= $methodData['scope'];
-                    }
-                    $this->code .= ' function ';
-                    $this->code .= $methodData['name'];
-                    $this->code .= '(';
-                    if (!empty($methodData['parameters'])) {
-                        foreach($methodData['parameters'] as $parameterIndex => $parameter) {
-                            if (!empty($parameter['class'])) {
-                                $segments = explode("\\", $parameter['name']);
-                                $modelName = $segments[count($segments) - 1];
-                                $this->code .= \Str::ucfirst($modelName) . ' ';
-                            }
-                            $this->code .= '$' . $parameter['name'];
-                            if (!empty($parameter['parameters'][$parameterIndex + 1]) && !empty($methodData['parameters'][$parameterIndex + 1]['name'])) {
-                                $this->code .= ', ';
-                            }
-                        }
-                    }
-                    $this->code .= ") {\n\t\t";
-                    if (!empty($methodData['variables'])) {
-                        foreach($methodData['variables'] as $variableIndex => $variable) {
-                            //dd($variable);
-                            if ($variable['type'] == 'string') {
-                                $this->code .= '$' . $variable['name'] . ' = "' . $variable['value'] . '";';
-                            } else {
-                                $this->code .= '$' . $variable['name'] . ' = ' . $variable['value'] . ';';
-                            }
-                        }
-                    }
+                    $this->phpAssemblerService->assembleFunction($methodData);
                     if (!empty($methodData['data'])) {
-                        $statements = Statement::on($this->databaseConnection)->whereIn('slug', $methodData['data'])->get();
+                        $statements = Statement::on($this->databaseConnection)
+                            ->whereIn('slug', $methodData['data'])
+                            ->get();
                         foreach($methodData['data'] as $slug) {
-                            $statement = $statements->where('slug', $slug)->first();
+                            $statement = Statement::where('slug', $slug)->first();
                             $statementData = json_decode($statement->data, true);
-                            dd($statementData);
-                            $this->constructPhpStatement($statementData);
+                            if (!empty($statementData['data'])) {
+                                $clauses = Clause::on($this->databaseConnection)
+                                    ->whereIn('slug', $statementData['data'])
+                                    ->where(function($query) {
+                                        $query->where('project_id', $this->user->project_id)
+                                                ->orWhereNull('project_id');
+                                    })
+                                    ->get();
+                                foreach($statementData['data'] as $index => $clauseSlug) {
+                                    $clause = $clauses->where('slug', $clauseSlug)->first();
+                                    $clauseData = json_decode($clause->data, true);
+                                    $code = $this->phpAssemblerService->assembleStatement($clauseData);
+                                }
+                            }
                         }
                     }
-                    $this->code .= "\n\t";
-                    $this->code .= "}";
-                } else if (!empty($controllerData['data'])) {
-                    $this->constructPhpMethods($controllerData);
+                    $this->code .= $code;
+                    $this->code .= "\n";
+                    $this->code .= "\t\t}";
                 }
-
                 $controllerName = $controllerData['name'];
-
-                $controllerTemplate = <<<EOD
+                $controllerFile = <<<EOD
                 namespace App\Http\Controllers;
                 use App\Http\Controllers\Controller;
-                $includes
+                $controllerIncludes
                 class $controllerName extends Controller 
                 {
-                    $controllerInstanceVariables
+                    $controllerVariables
 
                     $this->code
                 }
                 EOD;
                 if ($returnCode) {
-                    return $controllerTemplate;
+                    return $controllerFile;
                 } else {
-                    eval($controllerTemplate);
-                    $fullyQualifiedClassName = "\\App\\Http\\Controllers\\$controllerName";
-                    $dynamicController = new $fullyQualifiedClassName();
-                    if ($type == 'api') {
-                        return $dynamicController->{$methodData['name']}($request);
-                    } elseif (!empty($methodData['parameters']) && is_array($methodData['parameters']) && count($methodData['parameters'])) {
-                        return $dynamicController->{$methodData['name']}($request);
-                    } else {
-                        return $dynamicController->{$methodData['name']}();
+                    if (!empty($this->debug)) {
+                        dump($controllerFile);
+                    } else if ($this->phpAssemblerService->validateFile($controllerFile)) {
+                        eval($controllerFile);
+                        $fullyQualifiedClassName = "\\App\\Http\\Controllers\\$controllerName";
+                        $dynamicController = new $fullyQualifiedClassName();
+                        if ($type == 'api') {
+                            return $dynamicController->{$methodData['name']}($request);
+                        } elseif (!empty($methodData['parameters']) && is_array($methodData['parameters']) && count($methodData['parameters'])) {
+                            return $dynamicController->{$methodData['name']}($request);
+                        } else {
+                            return $dynamicController->{$methodData['name']}();
+                        }
                     }
                 }
+            } else {
+                $error = new \stdClass();
+                $error->message = 'Database connection not found.';
+                $error->status = '500';
+                $this->systemErrors[] = $error;
+                return;
             }
         } catch (\Throwable $e) {
             //report($e);
-            $this->editor['message'] = $e->getMessage();
-        }
-    }
-
-    public function constructPhpStatement($statementData) {
-        $this->code .= "\n\t\t";
-        if (!empty($statementData['data'])) {
-            foreach($statementData['data'] as $index => $clauseSlug) {
-                $clause = Clause::on($this->databaseConnection)->where(['slug' => $clauseSlug])->first();
-                $clauseData = json_decode($clause->data, true);
-                if ($clauseData['type'] == 'T_FUNCTION') {
-                    $this->code .= 'function';
-                }
-                if ($clauseData['type'] == 'T_PUBLIC') {
-                    $this->code .= 'public ';
-                }
-                if ($clauseData['type'] == 'T_PROTECTED') {
-                    $this->code .= 'protected ';
-                }
-                if ($clauseData['type'] == 'T_PRIVATE') {
-                    $this->code .= 'private ';
-                }
-                if ($clauseData['type'] == 'T_STATIC') {
-                    $this->code .= 'static ';
-                }
-                if ($clauseData['type'] == 'T_STRING') {
-                    $this->code .= '(string) ';
-                }
-                if ($clauseData['type'] == 'T_BOOLEAN') {
-                    $this->code .= '(bool) ';
-                }
-                if ($clauseData['type'] == 'T_ELSE') {
-                    $this->code .= ' else ';
-                }
-                if ($clauseData['type'] == 'T_ELSEIF') {
-                    $this->code .= 'elseif ';
-                }
-                if ($clauseData['type'] == 'T_FOREACH') {
-                    $this->code .= 'foreach ';
-                }
-                if ($clauseData['type'] == 'T_FOR') {
-                    $this->code .= 'for ';
-                }
-                if ($clauseData['type'] == 'T_WHILE') {
-                    $this->code .= 'while ';
-                }
-                if ($clauseData['type'] == 'T_DO') {
-                    $this->code .= 'do ';
-                }
-                if ($clauseData['type'] == 'T_NEW') {
-                    $this->code .= 'new ';
-                }
-                if ($clauseData['type'] == 'T_AND_EQUAL') {
-                    $this->code .= '&=';
-                }
-                if ($clauseData['type'] == 'T_OR_EQUAL') {
-                    $this->code .= '|=';
-                }
-                if ($clauseData['type'] == 'T_XOR_EQUAL') {
-                    $this->code .= '^=';
-                }
-                if ($clauseData['type'] == 'T_PLUS_EQUAL') {
-                    $this->code .= '+=';
-                }
-                if ($clauseData['type'] == 'T_MINUS_EQUAL') {
-                    $this->code .= '-=';
-                }
-                if ($clauseData['type'] == 'T_MUL_EQUAL') {
-                    $this->code .= '*=';
-                }
-                if ($clauseData['type'] == 'T_DIV_EQUAL') {
-                    $this->code .= '/=';
-                }
-                if ($clauseData['type'] == 'T_MOD_EQUAL') {
-                    $this->code .= '%=';
-                }
-                if ($clauseData['type'] == 'T_COALESCE') {
-                    $this->code .= '??';
-                }
-                if ($clauseData['type'] == 'T_SPACESHIP') {
-                    $this->code .= '<=>';
-                }
-                if ($clauseData['type'] == 'T_IS_EQUAL') {
-                    $this->code .= '==';
-                }
-                if ($clauseData['type'] == 'T_IS_NOT') {
-                    $this->code .= '!';
-                }
-                if ($clauseData['type'] == 'T_IS_NOT_EQUAL') {
-                    $this->code .= '!=';
-                }
-                if ($clauseData['type'] == 'T_IS_IDENTICAL') {
-                    $this->code .= '===';
-                }
-                if ($clauseData['type'] == 'T_IS_NOT_IDENTICAL') {
-                    $this->code .= '!==';
-                }
-                if ($clauseData['type'] == 'T_GREATER_EQUAL') {
-                    $this->code .= '>=';
-                }
-                if ($clauseData['type'] == 'T_LESS_EQUAL') {
-                    $this->code .= '<=';
-                }
-                if ($clauseData['type'] == 'T_CLASS') {
-                    $this->code .= '(class) ';
-                }
-                if ($clauseData['type'] == 'T_EMPTY') {
-                    $this->code .= 'empty';
-                }
-                if ($clauseData['type'] == 'T_ISSET') {
-                    $this->code .= 'isset';
-                }
-                if ($clauseData['type'] == 'T_INSTANCEOF') {
-                    $this->code .= 'instance of';
-                }
-                if ($clauseData['type'] == 'T_DOUBLE_COLON') {
-                    $this->code .= '::';
-                }
-                if ($clauseData['type'] == 'T_DOUBLE_ARROW') {
-                    $this->code .= ' => ';
-                }
-                if ($clauseData['type'] == 'T_EQUALS') {
-                    $this->code .= ' = ';
-                }
-                if ($clauseData['type'] == 'T_IF') {
-                    $this->code .= 'if';
-                }
-                if ($clauseData['type'] == 'T_RETURN') {
-                    $this->code .= 'return ';
-                }
-                if ($clauseData['type'] == 'T_OPEN_PARENTHESIS') {
-                    $this->code .= '(';
-                }
-                if ($clauseData['type'] == 'T_CLOSE_PARENTHESIS') {
-                    $this->code .= ')';
-                }
-                if ($clauseData['type'] == 'T_OPEN_BRACE') {
-                    $this->code .= '{';
-                }
-                if ($clauseData['type'] == 'T_CLOSE_BRACE') {
-                    $this->code .= '}';
-                }
-                if ($clauseData['type'] == 'T_OPEN_BRACKET') {
-                    $this->code .= '[';
-                }
-                if ($clauseData['type'] == 'T_CLOSE_BRACKET') {
-                    $this->code .= ']';
-                }
-                if ($clauseData['type'] == 'T_IS_NOT') {
-                    $this->code .= '!';
-                }
-                if ($clauseData['type'] == 'T_COMMA') {
-                    $this->code .= ",";
-                }
-                if ($clauseData['type'] == 'T_END_LINE') {
-                    $this->code .= ";";
-                }
-                if ($clauseData['type'] == 'T_OBJECT_OPERATOR') {
-                    $this->code .= "->";
-                }
-                if ($clauseData['type'] == 'T_THIS') {
-                    $this->code .= "\$this";
-                }
-                if ($clauseData['type'] == 'string') {
-                    $this->code .= "'".$clauseData['value']."'";
-                }
-                if ($clauseData['type'] == 'number') {
-                    $this->code .= $clauseData['value'];
-                }
-                if ($clauseData['type'] == 'method') {
-                    $this->code .= $clauseData['name'];
-                }
-                if ($clauseData['type'] == 'model') {
-                    $this->code .= $clauseData['name'];
-                }
-                if ($clauseData['type'] == 'variable') {
-                    $this->code .= "$" . $clauseData['name'];
-                }
-                if ($clauseData['type'] == 'property') {
-                    $this->code .= $clauseData['name'];
-                }
-                if ($clauseData['type'] == 'class') {
-                    $pathSegments = explode('\\', $clauseData['name']);
-                    if (count($pathSegments) > 1) {
-                        $this->code .= $pathSegments[count($pathSegments) - 1];
-                    } else {
-                        $this->code .= $clauseData['name'];
-                    }
-                }
-            }
+            $error = new \stdClass();
+            $error->message = $e->getMessage() . ' on line ' . $e->getLine();
+            $error->status = '400';
+            $this->systemErrors[] = $error;
+            return;
         }
     }
 
