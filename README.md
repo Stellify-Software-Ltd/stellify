@@ -9,7 +9,7 @@ The JSON data objects are stored in a database tables rather than in files. Thes
 
 We’re essentially creating a high-level abstraction over programming itself. You could apply transformations, enforce consistency across an entire codebase, or even optimize generated code via AI, before outputting it.
 
-Here's an example of how we would store an HTML tag:
+Here's an example of how we would store an HTML tag using Stellify:
 
 ```
 {
@@ -30,7 +30,7 @@ Here's an example of how we would store an HTML tag:
 }
 ```
 
-Here's how we store a controller file, not that the extends key points to a different JSON object that reprsents the controller class this controller extends:
+Here's how we store a controller file, note that this file definition points to a different file definition altogether, one that represents the Controller class this controller extends:
 
 ```
 {
@@ -47,7 +47,7 @@ Here's how we store a controller file, not that the extends key points to a diff
 }
 ```
 
-It's important to note that additional fields exist in the same row, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use at Stellisoft in this repository, under the `database/migrations` directory.
+It's also important to note that additional fields exist in the same table row in which we store these definitions, these fields tend to contain data we would wish to use in queries, such as `date_created`. You can view the table structures we use at Stellisoft in this repository, under the `database/migrations` directory.
 
 And here's example of how we would store the token "for" in PHP: 
 
@@ -70,7 +70,7 @@ Finally, here's an example of how we would store a variable in Javascript:
 Stellify abstracts and standardises and your ***entire*** web application in this way, making it possible to pull updates in from a central remote store that update ***entire*** applications, all whilst remaining mindful of how changes will impact other parts of your application. Introducing AI to the mix, it's not difficult to see how a simple shift to storing code in this way can really introduce some very powerful ways of maintaining, developing and deploying your web applications.
 
 Other benefits of this approach include:
-
+- Benefits derived from combinining all the underlying technology, frameworks, libraries under one, standardised, umbrella language
 - Increased portability of code
 - Cross-language generation
 - Ease and increased speed of delivery and backup
