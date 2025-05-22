@@ -1,6 +1,6 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.jpeg" width="200" alt="Stellify Logo"></a></p>
 
-The current stable version of our Laravel web application framework, supercharged with Stellify!!!
+The current stable version of the Laravel web application framework, supercharged with Stellify!!!
 
 ## Contributing
 
@@ -16,4 +16,4 @@ The stellify framework is open-sourced software licensed under the [MIT license]
 
 ## Learn more
 
-If you would like to learn more about [Stellify](https://stellisoft.com/stellify/documentation) then you can read the comprehensive documentation on our website and also subsribe to our [YouTube channel](https://www.youtube.com/@stellisoft).
+If you would like to learn more about [Stellify](https://stellisoft.com/) then you can read the comprehensive [documentation](https://stellisoft.com/stellify/documentation) on our website and also subsribe to our [YouTube channel](https://www.youtube.com/@stellisoft).
