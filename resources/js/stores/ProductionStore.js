@@ -107,6 +107,12 @@ export const ProductionStore = defineStore('stellifyStore', {
     ),
 	actions: {
         runMethod(method, { caller, event }) {
+            let target = null;
+            if (typeof this.content[caller].relativeTarget != 'undefined') {
+                target = this.resolveRelativeTarget(caller);
+            } else if (typeof this.content[caller].target != 'undefined') {
+                target = this.content[caller].target;
+            }
             if (this.methods[method] && Object.keys(this.jsTokens).length > 0) {
                 let expression = '';
                 this.methods[method].data.forEach((statement) => {
@@ -119,22 +125,40 @@ export const ProductionStore = defineStore('stellifyStore', {
                                 ) {
                                     expression += this.jsTokens[this.clauses[clause].type];
                                 } else {
-                                    if (this.clauses[clause].type == 'variable' && this.clauses[clause].name == 'value'){
-                                        expression += "'" + event.target.value + "'";
-                                    } else if (this.clauses[clause].name == 'callerId') {
-                                        expression += "'" + caller + "'";
-                                    } else if (this.clauses[clause].type == 'object') {
-                                        if (this.clauses[clause].name == 'caller') {
-                                            expression += "window.App.content['" + caller + "']";
-                                        } else {
-                                            expression += this.clauses[clause].name;
-                                        }
-                                    } else if (this.clauses[clause].type == 'element') {
-                                        expression += "window.App.content['" + this.clauses[clause].name + "']"
-                                    } else if (this.clauses[clause].type == 'string') {
+                                    if (this.clauses[clause].type == 'string') {
                                         expression += "'" + this.clauses[clause].value + "'";
+                                    } else if (target && this.clauses[clause].type == 'variable' && this.clauses[clause].name == 'target') {
+                                        expression += JSON.stringify(target);
+                                    } else if (target && this.clauses[clause].type == 'object' && (this.clauses[clause].name == 'data' || this.clauses[clause].name == 'variables')) {
+                                        expression += "this.variables";
+                                    } else if (target && this.clauses[clause].type == 'object' && this.clauses[clause].name == 'elements') {
+                                        expression += "this.content";
+                                    } else if (target && this.clauses[clause].type == 'object' && this.clauses[clause].name == 'route') {
+                                        expression += "this.page";
+                                    } else if (target && this.clauses[clause].type == 'object' && this.clauses[clause].name == 'target') {
+                                        expression += "this.content['" + target + "']";
+                                    } else if (caller && this.clauses[clause].type == 'object' && this.clauses[clause].name == 'caller') {
+                                        expression += "this.content['" + caller + "']";
                                     } else if (this.clauses[clause].type == 'number' || this.clauses[clause].type == 'boolean') {
                                         expression += this.clauses[clause].value;
+                                    } else if (this.clauses[clause].type == 'method') {
+                                        expression += this.clauses[clause].name;
+                                        if (this.clauses[clause].parameters) {
+                                            expression += '(';
+                                            this.clauses[clause].parameters.forEach((parameter, index) => {
+                                                if (parameter.type == 'string') {
+                                                    expression += "'" + parameter.value + "'";
+                                                } else if (parameter.type == 'number' || parameter.type == 'boolean') {
+                                                    expression += parameter.value;
+                                                } else if (parameter.type == 'variable') {
+                                                    expression += parameter.name;
+                                                }
+                                                if (index < this.clauses[clause].parameters.length - 1) {
+                                                    expression += ', ';
+                                                }
+                                            });
+                                            expression += ')';
+                                        }
                                     } else {
                                         expression += this.clauses[clause].name;
                                     }
@@ -144,9 +168,11 @@ export const ProductionStore = defineStore('stellifyStore', {
                     }
                 });
                 try {
+                    //console.log('expression', expression, eval(expression));
                     return eval(expression);
                 } catch (error) {
                     console.error('Stellify error: ' +  error);
+                    console.log('Code: ' + expression);
                 }
             } else {
                 console.error('Stellify error: Method not found, have you removed the method and reinstated it? If so, you must update the reference.');
