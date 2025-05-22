@@ -22,12 +22,11 @@ use App\Http\Middleware\mergeSettingsIntoConfig;
 */
 Route::get('/sitemap.xml', [RouteController::class, 'generateSitemap']);
 
-Route::get('/populateStyles', [RouteController::class, 'populateStyles']);
-
 Route::get('/run', [RouteController::class, 'run'])->middleware('web', 'config.merge');;
 
-Route::get('/js/{all}', [RouteController::class, 'requestJavascript'])->middleware('web', 'config.merge');;
-Route::get('/php/{all}', [RouteController::class, 'requestPhp'])->middleware('web', 'config.merge');;
+Route::get('/js/{all}', [RouteController::class, 'requestJavascript'])->middleware('web', 'config.merge');
+
+Route::get('/stellify/stream/elements/{view}', [RouteController::class, 'streamElements'])->where('all', '.*')->middleware('web');
 
 Route::post('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
 Route::get('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');

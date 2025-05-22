@@ -551,6 +551,43 @@ class RouteController extends Controller implements HasMiddleware
         }
     }
 
+    public function streamElements(Request $request) {
+        $this->initLight($request);
+        $this->traverseBlocks([$request->view]);
+        
+        if (empty($this->blockHierarchy)) {
+            return response()->json([], 404);
+        }
+    
+        return response()->stream(function() {
+            $elements = Element::on($this->databaseConnection)
+                ->select('data')
+                ->where('project_id', $this->project->slug)
+                ->whereIn('slug', $this->blockHierarchy)
+                ->cursor();
+    
+            foreach ($elements as $element) {
+                // Ensure data is properly formatted
+                if (empty($element->data)) {
+                    continue;
+                }
+                
+                $data = json_encode(
+                    json_decode($element->data)
+                );
+                
+                echo "data: {$data}\n\n";
+                ob_flush();
+                flush();
+            }
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no'
+        ]);
+    }
+
     public function requestJavascript(Request $request) {
         $this->init($request);
         $uriSegments = explode('/', $this->path);
@@ -644,21 +681,6 @@ class RouteController extends Controller implements HasMiddleware
 
         return response($this->code, 200)
                 ->header('Content-Type', 'application/javascript');
-    }
-
-    public function requestPhp(Request $request) {
-        $this->init($request);
-        $uriSegments = explode('/', $this->path);
-        if (!empty($uriSegments) && is_array($uriSegments) && count($uriSegments) == 2) {
-            $file = File::on($this->databaseConnection)->where(['name' => $uriSegments[1], 'type' => 'controller', 'public' => true])->first();
-            if (empty($file)) {
-                return abort(404);
-            }
-            if (!empty($file)) {
-                $fileData = json_decode($file->data, true);
-                return $this->php($this->project->slug, $request, $fileData, null, null, null, true);
-            }
-        }
     }
 
     public function constructJsMethods($fileData) {
@@ -1221,29 +1243,6 @@ class RouteController extends Controller implements HasMiddleware
             $this->systemErrors[] = $error;
             return;
         }
-    }
-
-    public function generateSitemap(Request $request) {
-        $this->init($request);
-        $pages = [];
-        $pages = Page::on($this->databaseConnection)->where(['public' => 1])->get();
-        foreach($pages as $page) {
-            $pageData = json_decode($page->data, true);
-            if (!empty($pageData)) {
-                if (!empty($pageData['children'])) {
-                    $templatePages = Page::on($this->databaseConnection)->whereIn('slug', $pageData['children'])->get();
-                    if (!empty($templatePages)) {
-                        foreach($templatePages as $templatePage) {
-                            if (!empty($templatePage['path'])) {
-                                $templatePage['path'] = preg_replace('/{[^}]+}/', $templatePage['path'], $pageData['path']);
-                            }
-                        }
-                        $pages = $pages->merge($templatePages);
-                    }
-                }
-            }
-        }
-        return response()->view('pages.sitemap', ['pages' => $pages, 'date' => date('Y-m-d'), 'root' => $this->root])->header('Content-Type', 'text/xml');
     }
 
     public function run(Request $request) {
