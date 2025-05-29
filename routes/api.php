@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('{all}', [RouteController::class, 'api'])->where('all', '.*');
+    Route::post('{all}', [RouteController::class, 'api'])->where('all', '.*');
+    Route::put('{all}', [RouteController::class, 'api'])->where('all', '.*');
+    Route::delete('{all}', [RouteController::class, 'api'])->where('all', '.*');
+    Route::patch('{all}', [RouteController::class, 'api'])->where('all', '.*');
+    Route::options('{all}', [RouteController::class, 'api'])->where('all', '.*');
 });

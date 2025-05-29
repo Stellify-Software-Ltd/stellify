@@ -30,7 +30,3 @@ Route::get('/stellify/stream/elements/{view}', [RouteController::class, 'streamE
 
 Route::post('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
 Route::get('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
-Route::put('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
-Route::patch('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
-Route::delete('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
-Route::options('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
