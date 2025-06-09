@@ -19,6 +19,8 @@ return new class extends Migration
             $table->uuid('name');
             $table->uuid('slug');
             $table->string('path');
+            $table->string('controller');
+            $table->string('controller_method');
             $table->string('type');
             $table->string('method');
             $table->boolean('public')->default(false);
