@@ -1,6 +1,8 @@
 <p align="center"><a href="https://stellisoft.com" target="_blank"><img src="https://raw.githubusercontent.com/Stellify-Software-Ltd/stellify/refs/heads/main/public/stellify_logo.jpeg" width="200" alt="Stellify Logo"></a></p>
 
-The current stable version of the Laravel web application framework, supercharged with Stellify!!!
+## About
+
+Stellify transforms Laravel applications by storing business logic (code) and configuration in a database rather than static files. This architectural shift enables centralized code sharing, version control, and real-time collaboration across multiple projects while leveraging Laravel's framework capabilities.
 
 ## Contributing
 
