@@ -37,12 +37,13 @@ class PhpAssemblerService
         'T_GREATER_EQUAL' => '>=',
         'T_LESS_EQUAL' => '<=',
         'T_CLASS' => '(class) ',
+        'T_EVENT_METHOD' => 'event',
         'T_EMPTY' => 'empty',
         'T_ISSET' => 'isset',
         'T_INSTANCEOF' => 'instance of',
         'T_DOUBLE_COLON' => '::',
         'T_DOUBLE_ARROW' => ' => ',
-        'T_EQUALS' => ' = ',
+        'T_EQUAL' => ' = ',
         'T_IF' => 'if',
         'T_RETURN' => 'return ',
         'T_OPEN_PARENTHESIS' => '(',
@@ -52,6 +53,8 @@ class PhpAssemblerService
         'T_OPEN_BRACKET' => '[',
         'T_CLOSE_BRACKET' => ']',
         'T_COMMA' => ',',
+        'T_CONCAT' => '.',
+        'T_BACKSLASH' => '\\',
         'T_END_LINE' => ';',
         'T_OBJECT_OPERATOR' => '->',
         'T_THIS' => '$this',
@@ -59,7 +62,7 @@ class PhpAssemblerService
 
     private array $disallowedFunctions = [
         // Existing system functions
-        'exec', 'shell_exec', 'system', 'passthru', 
+        'exec', 'shell_exec', 'system', 'passthru', 'local',
         'eval', 'popen', 'proc_open', 'unlink',
         'file_get_contents', 'file_put_contents',
         'include', 'include_once', 'require', 'require_once',
@@ -143,7 +146,19 @@ class PhpAssemblerService
         'model' => 'App\\Models\\',
     ];
 
-    public function assembleStatement(array $clause): string
+    public function startClassDeclaration(array $class, ?array $extends, ?array $implements): void
+    {
+        $this->code .= "class " . $class['name'];
+        if (!empty($extends)) {
+            $this->code .= " extends " . $extends['name'];
+        }
+        if (!empty($implements)) {
+            $this->code .= " implements " . $implements['name'];
+        }
+        $this->code .= " {\n";
+    }
+
+    public function assembleStatement(array $clause): void
     {
         if (!isset($clause['type'])) {
             throw new \InvalidArgumentException('Clause type is required');
@@ -152,7 +167,7 @@ class PhpAssemblerService
         if (isset($this->tokenMap[$clause['type']])) {
             $this->code .= $this->tokenMap[$clause['type']];
             if ($clause['type'] === 'T_END_LINE') {
-                $this->code .= "\n\t\t\t\t";
+                $this->code .= "\n";
             }
         }
 
@@ -165,13 +180,13 @@ class PhpAssemblerService
             $this->code .= "$" . $clause['name'];
         }
 
-        if ($clause['type'] === 'string' && isset($clause['value'])) {
-            $this->code .= "'" . addslashes($clause['value']) . "'";
+        if ($clause['type'] === 'string' && isset($clause['name'])) {
+            $this->code .= "'" . addslashes($clause['name']) . "'";
         }
 
-        if ($clause['type'] === 'number' && isset($clause['value'])) {
-            if (is_numeric($clause['value']) && $this->validateClause($clause)) {
-                $this->code .= $clause['value'];
+        if ($clause['type'] === 'number' && isset($clause['name'])) {
+            if (is_numeric($clause['name']) && $this->validateClause($clause)) {
+                $this->code .= $clause['name'];
             }
         }
 
@@ -200,35 +215,41 @@ class PhpAssemblerService
                 }
             }
         }
-
-        return $this->code;
     }
 
     private function assembleMethod(array $clause): void
     {
-        $this->code .= $clause['name'] . '(';
-        
-        if (!empty($clause['parameters'])) {
-            $params = array_map(function($param) {
-                if ($param['type'] === 'variable') {
-                    return '$' . $param['name'];
-                }
-                if ($param['type'] === 'string') {
-                    return "'" . addslashes($param['value']) . "'";
-                }
-                if (($param['type'] === 'number' || $param['type'] === 'int') && is_numeric($param['value'])) {
-                    return $param['value'];
-                }
-            }, $clause['parameters']);
-            
-            $this->code .= implode(', ', $params);
+
+        if ($clause['name'] === 'view') {
+            $this->code .= '$this->element';
+        } else {
+            $this->code .= $clause['name'];
         }
+
+        // $this->code .= $clause['name'] . '(';
         
-        $this->code .= ')';
+        // if (!empty($clause['parameters'])) {
+        //     $params = array_map(function($param) {
+        //         if ($param['type'] === 'variable') {
+        //             return '$' . $param['name'];
+        //         }
+        //         if ($param['type'] === 'string') {
+        //             return "'" . addslashes($param['name']) . "'";
+        //         }
+        //         if (($param['type'] === 'number' || $param['type'] === 'int') && is_numeric($param['name'])) {
+        //             return $param['name'];
+        //         }
+        //     }, $clause['parameters']);
+            
+        //     $this->code .= implode(', ', $params);
+        // }
+        
+        // $this->code .= ')';
     }
 
     public function assembleFunction(array $clause): string
     {
+        $this->code .= "\t";
         if (empty($clause['scope'])) {
             $this->code .= 'public';
         } else {
@@ -245,13 +266,16 @@ class PhpAssemblerService
                     return '$' . $param['name'];
                 }
                 if ($param['type'] === 'string') {
-                    return "'" . addslashes($param['value']) . "'";
+                    return "'" . addslashes($param['name']) . "'";
                 }
-                if (($param['type'] === 'number' || $param['type'] === 'int') && is_numeric($param['value'])) {
-                    return $param['value'];
+                if (($param['type'] === 'number' || $param['type'] === 'int') && is_numeric($param['name'])) {
+                    return $param['name'];
                 }
                 if ($param['type'] === 'mixed') {
-                    return $param['value'];
+                    return $param['name'];
+                }
+                if ($param['type'] === 'class') {
+                    return $param['class'] . ' $' . $param['name'];
                 }
             }, $clause['parameters']);
             
@@ -264,7 +288,7 @@ class PhpAssemblerService
         } else {
             $this->code .= ": void\n";
         }
-        $this->code .= "\t\t{\n\t\t\t\t";
+        $this->code .= "\t{\n\t\t";
         return $this->code;
     }
 
@@ -283,12 +307,46 @@ class PhpAssemblerService
         $this->code = '';
     }
 
-    public function assembleUseStatement(string $namespace = null, string $class): string
+    public function assembleUseStatement(?string $namespace, string $class): void
     {
         if (isset($this->namespaceMap[$namespace])) {
             $namespace = $this->namespaceMap[$namespace];
         }
-        return 'use ' . $namespace . $class . ';' . "\n";
+        $this->code .= 'use ' . $namespace . $class . ';' . "\n";
+    }
+
+    public function assemblePropertyDeclaration(array $property): string
+    {
+        if (!empty($property['name'])) {
+            $scope = in_array($property['scope'] ?? 'private', ['private', 'protected', 'public']) 
+                ? $property['scope'] 
+                : 'private';
+
+            $name = $property['name'];
+            $value = $this->formatVariableValue($property['value'] ?? null);
+            $this->code .= "\t{$scope} \${$name} = {$value};\n";
+        }
+    }
+
+    private function formatVariableValue($value): string
+    {
+        if (is_null($value)) {
+            return 'null';
+        }
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        if (is_numeric($value)) {
+            return (string) $value;
+        }
+        if (is_string($value)) {
+            return "'" . addslashes($value) . "'";
+        }
+        if (is_array($value)) {
+            return '[]';
+        }
+        
+        return 'null';
     }
 
     public function validateFile(string $code): bool
@@ -314,14 +372,8 @@ class PhpAssemblerService
             }
         }
 
-        if (!empty($clause['value'])) {
-            if (!empty($clause['value']) && in_array(strtolower($clause['value']), $this->disallowedFunctions)) {
-                return false;
-            }
-        }
-
         foreach ($this->disallowedPhrases as $phrase) {
-            if (!empty($clause['value']) && stripos($clause['value'], $phrase) !== false) {
+            if (!empty($clause['name']) && stripos($clause['name'], $phrase) !== false) {
                 return false;
             }
         }

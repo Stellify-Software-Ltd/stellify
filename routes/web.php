@@ -1,13 +1,9 @@
 <?php
 
 use Illuminate\Foundation\Application;
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\RouteController;
-
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Middleware\mergeSettingsIntoConfig;
+use App\Http\Controllers\AppController;
 
 
 /*
@@ -20,13 +16,9 @@ use App\Http\Middleware\mergeSettingsIntoConfig;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/sitemap.xml', [RouteController::class, 'generateSitemap']);
 
-Route::get('/run', [RouteController::class, 'run'])->middleware('web', 'config.merge');;
+require __DIR__.'/auth.php';
 
-Route::get('/js/{all}', [RouteController::class, 'requestJavascript'])->middleware('web', 'config.merge');
-
-Route::get('/stellify/stream/elements/{view}', [RouteController::class, 'streamElements'])->where('all', '.*')->middleware('web');
-
-Route::post('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
-Route::get('{all}', [RouteController::class, 'index'])->where('all', '.*')->middleware('web', 'config.merge');
+Route::get('/sitemap.xml', [AppController::class, 'generateSitemap']);
+Route::post('{all}', [AppController::class, 'index'])->where('all', '.*');
+Route::get('{all}', [AppController::class, 'index'])->where('all', '.*');

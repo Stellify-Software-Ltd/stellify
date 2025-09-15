@@ -13,6 +13,7 @@ class AstVisitor extends NodeVisitorAbstract
     private $currentFunction = null;
 
     public function enterNode(Node $node) {
+        dd($node);
         if ($node instanceof Node\Stmt\Function_) {
             $this->processFunction($node);
         } elseif ($node instanceof Node\Stmt\Expression && $node->expr instanceof Node\Expr\Assign) {
@@ -29,14 +30,14 @@ class AstVisitor extends NodeVisitorAbstract
         $params = array_map(function($param) {
             $paramUuid = $this->generateUuid();
             return [
-                'slug' => $paramUuid,
+                'uuid' => $paramUuid,
                 'name' => $param->var->name,
                 'type' => 'variable',
             ];
         }, $node->params);;
 
         $this->functions[] = [
-            'slug' => $uuid,
+            'uuid' => $uuid,
             'name' => $node->name->name,
             'params' => $params,
             'data' => [],
@@ -53,21 +54,20 @@ class AstVisitor extends NodeVisitorAbstract
         $valUuid = $this->generateUuid();
 
         $this->statements[] = [
-            'slug' => $stmtUuid,
-            'type' => 'assignment',
+            'uuid' => $stmtUuid,
             'data' => [$varUuid, $opUuid, $valUuid],
         ];
 
         if ($node->var instanceof Node\Expr\Variable) {
             $this->clauses[$varUuid] = [
-                'slug' => $varUuid,
+                'uuid' => $varUuid,
                 'type' => 'variable',
-                'value' => '$' . $node->var->name,
+                'value' => $node->var->name,
             ];
         }
 
         $this->clauses[$opUuid] = [
-            'slug' => $opUuid,
+            'uuid' => $opUuid,
             'type' => 'operator',
             'value' => '=',
         ];
@@ -84,9 +84,7 @@ class AstVisitor extends NodeVisitorAbstract
         $condUuid = $this->generateUuid();
 
         $this->statements[] = [
-            'slug' => $stmtUuid,
-            'type' => 'if',
-            'condition' => $condUuid,
+            'uuid' => $stmtUuid,
             'statements' => [],
         ];
 
@@ -102,7 +100,7 @@ class AstVisitor extends NodeVisitorAbstract
         $type = ($node instanceof Node\Stmt\For_) ? 'for' : (($node instanceof Node\Stmt\Foreach_) ? 'foreach' : 'while');
 
         $this->statements[] = [
-            'slug' => $stmtUuid,
+            'uuid' => $stmtUuid,
             'type' => $type,
             'data' => [],
         ];
@@ -114,16 +112,16 @@ class AstVisitor extends NodeVisitorAbstract
 
     private function processValue(Node $node, string $uuid): array {
         if ($node instanceof Node\Scalar\String_) {
-            return ['slug' => $uuid, 'type' => 'string', 'value' => '"' . $node->value . '"'];
+            return ['uuid' => $uuid, 'type' => 'string', 'value' => '"' . $node->value . '"'];
         }
         if ($node instanceof Node\Scalar\LNumber) {
-            return ['slug' => $uuid, 'type' => 'integer', 'value' => (string) $node->value];
+            return ['uuid' => $uuid, 'type' => 'integer', 'value' => (string) $node->value];
         }
         if ($node instanceof Node\Scalar\DNumber) {
-            return ['slug' => $uuid, 'type' => 'float', 'value' => (string) $node->value];
+            return ['uuid' => $uuid, 'type' => 'float', 'value' => (string) $node->value];
         }
         if ($node instanceof Node\Expr\Variable) {
-            return ['slug' => $uuid, 'type' => 'variable', 'value' => '$' . $node->name];
+            return ['uuid' => $uuid, 'type' => 'variable', 'value' => $node->name];
         }
         if ($node instanceof Node\Expr\MethodCall) {
             $targetUuid = $this->generateUuid();
@@ -142,13 +140,13 @@ class AstVisitor extends NodeVisitorAbstract
     
             // Store method call
             $this->clauses[$methodUuid] = [
-                'slug' => $methodUuid,
+                'uuid' => $methodUuid,
                 'type' => 'method',
                 'name' => $node->name->toString()
             ];
     
             return [
-                'slug' => $uuid,
+                'uuid' => $uuid,
                 'type' => 'method_call',
                 'data' => array_merge([$targetUuid, $methodUuid], $argsUuids)
             ];
@@ -167,26 +165,26 @@ class AstVisitor extends NodeVisitorAbstract
     
             // Store class reference
             $this->clauses[$classUuid] = [
-                'slug' => $classUuid,
+                'uuid' => $classUuid,
                 'type' => 'class',
                 'name' => $node->class->toString()
             ];
     
             // Store method call
             $this->clauses[$methodUuid] = [
-                'slug' => $methodUuid,
+                'uuid' => $methodUuid,
                 'type' => 'method',
                 'name' => $node->name->toString()
             ];
     
             // Return the static call structure
             return [
-                'slug' => $uuid,
+                'uuid' => $uuid,
                 'type' => 'static_call',
                 'data' => array_merge([$classUuid, $methodUuid], $argsUuids)
             ];
         }
-        return ['slug' => $uuid, 'type' => 'unknown', 'value' => ''];
+        return ['uuid' => $uuid, 'type' => 'unknown', 'value' => ''];
     }
 
     private function generateUuid(): string {
