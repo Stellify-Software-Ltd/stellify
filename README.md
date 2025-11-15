@@ -2,7 +2,7 @@
 
 ## About
 
-Stellify transforms Laravel applications by storing business logic (code) and configuration in a database rather than static files. This architectural shift enables centralized code sharing, version control, and real-time collaboration across multiple projects while leveraging Laravel's framework capabilities.
+Stellify transforms Laravel applications by storing business logic (code) and configuration in a database rather than static files. This architectural shift enables centralized, granular code sharing, version control, and real-time collaboration across multiple projects while leveraging Laravel's framework capabilities.
 
 ## Contributing
 
@@ -14,8 +14,8 @@ If you discover a security vulnerability within stellify, please send an e-mail 
 
 ## License
 
-The stellify framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Stellify is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ## Learn more
 
-If you would like to learn more about [Stellify](https://stellisoft.com/) then you can read the comprehensive [documentation](https://stellisoft.com/stellify/documentation) on our website and also subsribe to our [YouTube channel](https://www.youtube.com/@stellisoft).
+If you would like to learn more about [Stellify](https://stellisoft.com/) then you can read the comprehensive [documentation](https://stellisoft.com/stellify/documentation) on our website and also subscribe to our [YouTube channel](https://www.youtube.com/@stellisoft).
