@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 class CodeExecutionContext
 {
     public function __construct(
-        public readonly string $projectId,
         public readonly Request $request,
         public readonly array $controllerData,
         public readonly array $methodData,
