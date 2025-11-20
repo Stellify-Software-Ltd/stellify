@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\SitemapController;
 
 
 /*
@@ -19,6 +20,6 @@ use App\Http\Controllers\AppController;
 
 require __DIR__.'/auth.php';
 
-Route::get('/sitemap.xml', [AppController::class, 'generateSitemap']);
+Route::get('/sitemap.xml', [SitemapController::class, 'generateSitemap']);
 Route::post('{all}', [AppController::class, 'index'])->where('all', '.*');
 Route::get('{all}', [AppController::class, 'index'])->where('all', '.*');

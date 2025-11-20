@@ -106,35 +106,4 @@ class AppController extends Controller implements HasMiddleware
     {
         return $this->requestProcessor->executeSpecificMethod($fileUuid, $methodUuid, $request);
     }
-
-    /**
-     * Generate sitemap
-     */
-    public function generateSitemap(Request $request)
-    {
-        $pages = Route::where(['public' => 1])->get();
-        
-        foreach ($pages as $page) {
-            $pageData = json_decode($page->data, true);
-            if (!empty($pageData['children'])) {
-                $templatePages = Route::whereIn('uuid', $pageData['children'])->get();
-                if (!empty($templatePages)) {
-                    foreach ($templatePages as $templatePage) {
-                        if (!empty($templatePage['path'])) {
-                            $templatePage['path'] = preg_replace('/{[^}]+}/', $templatePage['path'], $pageData['path']);
-                        }
-                    }
-                    $pages = $pages->merge($templatePages);
-                }
-            }
-        }
-
-        return response()
-            ->view('pages.sitemap', [
-                'pages' => $pages,
-                'date' => date('Y-m-d'),
-                'root' => $request->root()
-            ])
-            ->header('Content-Type', 'text/xml');
-    }
 }
